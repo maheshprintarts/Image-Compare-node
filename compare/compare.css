@@ -1,0 +1,63 @@
+/* Compare panel and compare node. Colours come from the pp-* tokens when the
+   page defines them (.pp-editor), with the light theme's values otherwise, so
+   the panel also looks right on a page without the editor stylesheet. */
+
+/* ---------------------------------------------------------- compare node */
+/* Compare: a divider across the image with a round grip in its middle. Drawn
+   over the stage (not in the zoomed canvas), so it keeps its size at any zoom.
+   White line with a dark edge and a white grip: visible on black ink and on
+   white paper alike. The whole strip is the drag target, wider than it looks. */
+.pp-compare {
+  position: absolute; width: 24px; margin-left: -12px; z-index: 3;
+  cursor: ew-resize; touch-action: none; user-select: none;
+}
+.pp-compare__line {
+  position: absolute; top: 0; bottom: 0; left: 11px; width: 2px;
+  background: #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, .45), 0 0 6px rgba(0, 0, 0, .25);
+}
+.pp-compare__grip {
+  position: absolute; left: 50%; width: 40px; height: 40px; transform: translate(-50%, -50%);
+  display: flex; align-items: center; justify-content: center; gap: 3px;
+  border-radius: 50%; background: #fff; color: #1f2937; font-size: 12px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .35), 0 2px 8px rgba(0, 0, 0, .35);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.pp-compare:hover .pp-compare__grip,
+.pp-compare:active .pp-compare__grip { transform: translate(-50%, -50%) scale(1.08); }
+.pp-compare__grip:focus { outline: none; }
+.pp-compare__grip:focus-visible { box-shadow: 0 0 0 3px var(--pp-active, #2f6fed), 0 2px 8px rgba(0, 0, 0, .35); }
+.pp-compare__label {
+  position: absolute; z-index: 2; padding: 3px 8px; border-radius: 4px; pointer-events: none;
+  background: rgba(17, 24, 39, .72); color: #fff; font-size: 11px; font-weight: 600; letter-spacing: .02em;
+  white-space: nowrap; transition: opacity .15s ease;
+}
+.pp-compare__label--end { transform: translateX(-100%); }
+.pp-compare__label--hidden { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .pp-compare__grip, .pp-compare__label { transition: none; }
+}
+/* The divider off screen: no line, and the grip at the view's edge. */
+.pp-compare--off .pp-compare__line { display: none; }
+.pp-compare--off .pp-compare__grip { background: var(--pp-active, #2f6fed); color: #fff; }
+
+/* --------------------------------------------------------- compare panel */
+/* The stage of the standalone <ComparePanel>: the same checkerboard as the
+   editor's viewer. It fills its parent; the parent sets the height. */
+.pp-compare-panel {
+  position: relative; width: 100%; height: 100%; min-height: 240px; overflow: hidden;
+  cursor: grab; touch-action: none; background-color: var(--pp-bg, #f3f4f7);
+  background-image:
+    linear-gradient(45deg, var(--pp-border, #e2e5eb) 25%, transparent 25%), linear-gradient(-45deg, var(--pp-border, #e2e5eb) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--pp-border, #e2e5eb) 75%), linear-gradient(-45deg, transparent 75%, var(--pp-border, #e2e5eb) 75%);
+  background-size: 22px 22px; background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+}
+.pp-compare-panel--panning { cursor: grabbing; }
+.pp-compare-panel--fixed { cursor: default; }
+.pp-compare-panel__canvas {
+  position: absolute; top: 0; left: 0; transform-origin: 0 0;
+  background: var(--pp-paper, white); box-shadow: var(--pp-shadow-lg, 0 12px 32px rgba(16, 24, 40, .16));
+}
+.pp-compare-panel__layer {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+  user-select: none; -webkit-user-drag: none;
+}
